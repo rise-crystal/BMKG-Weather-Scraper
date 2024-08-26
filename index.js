@@ -54,7 +54,7 @@ if (index >= data.length) {
     const url = `https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/${df}`;
 
     // Nama area yang ingin dicari dalam bahasa Indonesia
-    const query = 'test ';
+    const query = 'Kab. Badung';
 
     // Fungsi untuk mengambil dan memparsing data XML
     async function fetchData() {
@@ -94,18 +94,24 @@ if (index >= data.length) {
                             console.log(`Longitude: ${longitude}`);
                             console.log('------------------------');
 
-                            // Contoh menampilkan informasi cuaca
+                            // Menampilkan informasi cuaca dalam format tabel
                             const weatherElements = area?.parameter || [];
                             weatherElements.forEach(element => {
                                 const weatherType = element?.$?.id;
                                 const timeranges = element?.timerange || [];
-
-                                timeranges.forEach(timerange => {
+                                
+                                const weatherData = timeranges.map(timerange => {
                                     const datetime = timerange?.$?.datetime;
                                     const formattedDatetime = `${datetime.slice(0, 4)}-${datetime.slice(4, 6)}-${datetime.slice(6, 8)} ${datetime.slice(8, 10)}:${datetime.slice(10, 12)}`;
                                     const weatherValue = timerange?.value?.[0]?._;
-                                    console.log(`Time: ${formattedDatetime}, Weather Type: ${weatherType}, Value: ${weatherValue}`);
+                                    return {
+                                        Time: formattedDatetime,
+                                        'Weather Type': weatherType,
+                                        Value: weatherValue
+                                    };
                                 });
+
+                                console.table(weatherData);
                             });
                         });
                     } else {
@@ -115,7 +121,7 @@ if (index >= data.length) {
                             const names = area?.name || [];
                             const idName = names.find(name => name.$['xml:lang'] === 'id_ID');
                             const enName = names.find(name => name.$['xml:lang'] === 'en_US');
-                            console.log(`- ${idName?._} (${enName?._})`);
+                            console.log(`- ${idName?._} (Kota ${enName?._})`);
                         });
                     }
                 } else {
